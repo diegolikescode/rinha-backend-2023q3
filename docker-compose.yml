@@ -1,0 +1,71 @@
+version: '3.5'
+services:
+  db:
+    image: postgres:latest
+    container_name: rinha2023q3_db_1
+    environment:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: admin
+        POSTGRES_DB: rinha
+
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: '1.5GB'
+
+  api1:
+    image: rinha2023q3
+    container_name: rinha2023q3_1
+    depends_on:
+      - db
+    ports:
+      - "6969:6969"
+    expose:
+      - "80"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  api2:
+    image: rinha2023q3
+    container_name: rinha2023q3_2
+    depends_on:
+      - db
+    ports:
+      - "6968:6968"
+    expose:
+      - "80"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/ettc/nginx/nginx.conf:ro
+    depends_on:
+      - api1
+      - api2
+    ports:
+      - "80"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: my_pgadmin
+    environment:
+        PGADMIN_DEFAULT_EMAIL: admin@example.com
+        PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
