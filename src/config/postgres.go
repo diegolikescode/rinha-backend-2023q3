@@ -13,11 +13,11 @@ import (
 func PostgresConnection() (db *gorm.DB){
     var err error
 
-    host := "localhost"
+    host := "db"
+    port := "5432"
     username := "admin"
     password := "admin"
     databaseName := "rinha"
-    port := "5432"
 
     connectionString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, username, password, databaseName, port)
     db, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})

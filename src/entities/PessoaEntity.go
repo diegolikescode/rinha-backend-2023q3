@@ -1,15 +1,21 @@
 package entities
 
 import (
-	"strings"
-	"time"
+	"regexp"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-type CustomDate struct {
-    time.Time
+type CreatePessoaDTO struct {
+    Apelido string `json:"apelido"`
+    Nome string `json:"nome"`
+    Nascimento string `json:"nascimento"`
+    Stack []string `json:"stack"`
+}
+
+type HttpResponse struct {
+    Message string `json:"message"`
 }
 
 type Pessoa struct {
@@ -17,18 +23,18 @@ type Pessoa struct {
     Id uuid.UUID `gorm:"uniqueIndex;primary_key;type:uuid;default:gen_random_uuid()" json:"id"`
     Apelido string `json:"apelido"`
     Nome string `json:"nome"`
-    // Nascimento CustomDate `json:"nascimento"`
-    // Stack []string `json:"stack"`
+    Nascimento string `json:"nascimento"`
+    Stack string `json:"stack"`
 }
 
-func (c *CustomDate) UnmarshalJSON(data []byte) error {
-    dateStr := strings.Trim(string(data), "\"")
-    parsedDate, err := time.Parse("2006-04-17", dateStr)
+func ValidaFormatoData (data string) (bool) {
+    datePattern := `^\d{4}-\d{2}-\d{2}$`
+    matched, err := regexp.Match(datePattern, []byte(data))
     if err != nil {
-	return err
+	return false
     }
 
-    c.Time = parsedDate
-    return nil
+    return matched
 }
+
 
