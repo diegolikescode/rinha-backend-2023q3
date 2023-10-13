@@ -17,3 +17,4 @@ dethatched:
 	docker-compose up -d --build
 	docker-compose logs > "/home/camel/src/rinha-backend-2023q3/resultados/primeira-fase/diegolikescode/docker-compose.logs"
 
+updown: kill compose
