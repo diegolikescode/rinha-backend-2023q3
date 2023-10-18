@@ -12,32 +12,30 @@ import (
 func BuscaPessoa (c *gin.Context, db *gorm.DB) {
 	userID := c.Param("id")
 
-	var user entities.Pessoa
+	var user entities.ReturnPessoa
 	if db.Where("id = ?", userID).First(&user).RowsAffected == 0 {	
-		c.IndentedJSON(http.StatusOK, entities.HttpResponse{
-			Message: "usuario nao encontrado",
-		})
+		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
+
 	c.IndentedJSON(http.StatusOK, user)
 	return 
 }
 
 func BuscaPessoaPorTermo (c *gin.Context, db *gorm.DB) {
 	searchTerm := c.Query("t")
-	userTerm := "%" + searchTerm + "%"
-
-
-	var users []entities.Pessoa
-	if db.Where(
-		"apelido LIKE ? OR nome LIKE ? OR stack LIKE ?", 
-		userTerm, userTerm, userTerm).Find(&users).RowsAffected == 0 {
-		c.IndentedJSON(http.StatusOK, entities.HttpResponse{
-			Message: "usuario nao encontrado",
-		})
-		return
+	if searchTerm == "" {
+		c.Writer.WriteHeader(http.StatusBadRequest)
 	}
 
+	userTerm := "%" + searchTerm + "%"
+
+	var users []entities.Pessoa
+	db.Where("admin LIKE ? LIMIT 50", userTerm).Find(&users)
+
+	if users == nil {
+		c.IndentedJSON(http.StatusOK, []entities.ReturnPessoa{})
+	}
 	c.IndentedJSON(http.StatusOK,  users)
 	return
 }

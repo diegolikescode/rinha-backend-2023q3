@@ -3,8 +3,7 @@ package entities
 import (
 	"regexp"
 
-	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"github.com/satori/go.uuid"
 )
 
 type CreatePessoaDTO struct {
@@ -19,12 +18,24 @@ type HttpResponse struct {
 }
 
 type Pessoa struct {
-    gorm.Model
-    Id uuid.UUID `gorm:"uniqueIndex;primary_key;type:uuid;default:gen_random_uuid()" json:"id"`
+    Id string `gorm:"uniqueIndex;primary_key;type:uuid" json:"id"`
     Apelido string `json:"apelido"`
     Nome string `json:"nome"`
     Nascimento string `json:"nascimento"`
     Stack string `json:"stack"`
+    SearchString string `json:"searchString"`
+}
+
+type ReturnPessoa struct {
+    Id string `json:"id"`
+    Apelido string `json:"apelido"`
+    Nome string `json:"nome"`
+    Nascimento string `json:"nascimento"`
+    Stack string `json:"stack"`
+}
+
+func CreateUUID () (string) {
+    return uuid.NewV4().String()
 }
 
 func ValidaFormatoData (data string) (bool) {

@@ -12,8 +12,8 @@ echo "iniciando e logando execução da API"
 mkdir "$RESULTS_WORKSPACE/$DIEGO"
 docker-compose up -d --build
 docker-compose logs > "$RESULTS_WORKSPACE/$DIEGO/docker-compose.logs"
-echo "pausa de 10 segundos para startup pra API"
-sleep 45
+echo "pausa de 20 segundos para startup pra API"
+sleep 20
 echo "iniciando teste"
 sh $GATLING_BIN_DIR/gatling.sh -rm local -s RinhaBackendSimulation \
     -rd $DIEGO\
