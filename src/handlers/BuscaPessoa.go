@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"rinha-backend-2023q3/src/entities"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -36,7 +37,19 @@ func BuscaPessoaPorTermo (c *gin.Context, db *gorm.DB) {
 	if users == nil {
 		c.IndentedJSON(http.StatusOK, []entities.ReturnPessoa{})
 	}
-	c.IndentedJSON(http.StatusOK,  users)
+
+	var usersReturn []entities.ReturnPessoa
+	for _, user := range users {
+		usersReturn = append(usersReturn, entities.ReturnPessoa{
+			Id: user.Id,
+			Apelido: user.Apelido,
+			Nome: user.Nome,
+			Nascimento: user.Nascimento,
+			Stack: strings.Split(user.Stack, ";"),
+		})
+	}
+
+	c.IndentedJSON(http.StatusOK,  usersReturn)
 	return
 }
 
