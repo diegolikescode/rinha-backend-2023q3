@@ -22,7 +22,8 @@ services:
           # memory: '1GB'
 
   api1:
-    image: rinha2023q3
+    image: rinha2023q3:latest
+    restart: always
     networks:
       - rinha-network
     container_name: rinha2023q3_1
@@ -38,7 +39,8 @@ services:
           # memory: '0.5GB'
 
   api2:
-    image: rinha2023q3
+    image: rinha2023q3:latest
+    restart: always
     networks:
       - rinha-network
     container_name: rinha2023q3_2
