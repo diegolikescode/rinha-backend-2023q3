@@ -19,21 +19,23 @@ func PostgresConnection() (db *gorm.DB){
     password := "postgres"
     databaseName := "rinha"
 
-    connectionString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, username, password, databaseName, port)
+    connectionString := fmt.Sprintf(
+	"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+	host, username, password, databaseName, port)
     db, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
     if err != nil {
-        panic(err)
+	panic(err)
     } else {
-        fmt.Println("Successfully connected to postgres")
+	fmt.Println("Successfully connected to postgres")
     }
 
-    // db.Migrator().DropTable(&entities.Pessoa{})
-    
-    
-    if err := db.AutoMigrate(&entities.Pessoa{}); err != nil {
-	log.Fatalf("AutoMigrate failed: %v", err)
+    migrator := db.Migrator()
+    if !migrator.HasTable(&entities.Pessoa{}) {
+	if err := db.AutoMigrate(&entities.Pessoa{}); err != nil {
+	    log.Fatalf("=======> AutoMigrate FAILED %v <========", err)
+	}
     }
 
     return db
 }
-1
+

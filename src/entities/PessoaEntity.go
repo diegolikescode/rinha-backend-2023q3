@@ -18,7 +18,7 @@ type HttpResponse struct {
 }
 
 type Pessoa struct {
-    Id string `gorm:"uniqueIndex;primary_key;type:uuid" json:"id"`
+    Id string `gorm:"uniqueIndex;primary_key;type:string" json:"id"`
     Apelido string `json:"apelido"`
     Nome string `json:"nome"`
     Nascimento string `json:"nascimento"`
@@ -31,7 +31,7 @@ type ReturnPessoa struct {
     Apelido string `json:"apelido"`
     Nome string `json:"nome"`
     Nascimento string `json:"nascimento"`
-    Stack string `json:"stack"`
+    Stack []string `json:"stack"`
 }
 
 func CreateUUID () (string) {
