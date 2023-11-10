@@ -1,7 +1,6 @@
 go:
 	docker-compose down --volumes --remove-orphans
 	docker-compose -f docker-compose.local.yml up --build -d
-	sleep 20
 	go run main.go
 
 build:
@@ -11,20 +10,18 @@ compose:
 	docker build -t rinha2023q3 .
 	docker-compose up --build
 
-kill:
-	docker-compose down --volumes --remove-orphans
-	docker container prune -f
-	# docker system prune -f
-	docker ps -a
-
 dethatched:
 	docker build -t rinha2023q3 .
 	docker-compose up -d --build
 	docker-compose logs > "/home/camel/src/rinha-backend-2023q3/resultados/primeira-fase/diegolikescode/docker-compose.logs"
 
+kill:
+	docker-compose down --volumes --remove-orphans
+	docker ps -a
+
 updown: 
 	$(MAKE) kill 
-	sleep 2
+	# sleep 2
 	$(MAKE) compose
 
 my_pgadmin:
