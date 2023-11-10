@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"rinha-backend-2023q3/src/entities"
 	"strconv"
@@ -12,11 +14,15 @@ import (
 
 func BuscaPessoa (c *gin.Context, db *gorm.DB) {
 	userID := c.Param("id")
-
-	var user entities.ReturnPessoa
-	if db.Where("id = ?", userID).First(&user).RowsAffected == 0 {	
-		c.Writer.WriteHeader(http.StatusNotFound)
-		return
+	fmt.Println(userID)
+	var user entities.Pessoa
+	res := db.First(&user, "id = ?", userID)
+	fmt.Println(res)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			c.Writer.WriteHeader(http.StatusNotFound)
+			return
+		}
 	}
 
 	c.IndentedJSON(http.StatusOK, user)
@@ -25,17 +31,21 @@ func BuscaPessoa (c *gin.Context, db *gorm.DB) {
 
 func BuscaPessoaPorTermo (c *gin.Context, db *gorm.DB) {
 	searchTerm := c.Query("t")
+	fmt.Println(searchTerm)
+
 	if searchTerm == "" {
 		c.Writer.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	userTerm := "%" + searchTerm + "%"
 
 	var users []entities.Pessoa
-	db.Where("admin LIKE ? LIMIT 50", userTerm).Find(&users)
+	db.Where("search_string LIKE ? LIMIT 50", userTerm).Find(&users)
 
-	if users == nil {
-		c.IndentedJSON(http.StatusOK, []entities.ReturnPessoa{})
+	if len(users) == 0 {
+		c.JSON(http.StatusOK, []interface{}{})
+		return
 	}
 
 	var usersReturn []entities.ReturnPessoa
