@@ -12,8 +12,8 @@ echo "iniciando e logando execução da API"
 mkdir "$RESULTS_WORKSPACE/$DIEGO"
 docker-compose up -d --build
 docker-compose logs > "$RESULTS_WORKSPACE/$DIEGO/docker-compose.logs"
-echo "pausa de 20 segundos para startup pra API"
-sleep 20
+echo "pausa de 6 segundos para startup pra API"
+sleep 6
 echo "iniciando teste"
 sh $GATLING_BIN_DIR/gatling.sh -rm local -s RinhaBackendSimulation \
     -rd $DIEGO\
@@ -22,7 +22,10 @@ sh $GATLING_BIN_DIR/gatling.sh -rm local -s RinhaBackendSimulation \
     -rsf $GATLING_WORKSPACE/user-files/resources
 echo "teste finalizado"
 echo "fazendo request e salvando a contagem de pessoas"
-curl -v "http://localhost:9999/contagem-pessoas" > "$RESULTS_WORKSPACE/$DIEGO/contagem-pessoas.log"
+SAVE_CONTAGEM="$RESULTS_WORKSPACE/$DIEGO/contagem-pessoas-$(date).log"
+curl -v "http://localhost:9999/contagem-pessoas" > "$SAVE_CONTAGEM"
+echo "resultado da contagem em $SAVE_CONTAGEM"
+cat "$SAVE_CONTAGEM"
 echo "cleaning up do docker"
 docker-compose rm -f
 docker-compose down
