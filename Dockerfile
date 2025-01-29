@@ -18,4 +18,3 @@ EXPOSE 9999
 
 # CMD ["wait-for-postgres.sh", "db", "./main"]
 CMD ["./main"]
-

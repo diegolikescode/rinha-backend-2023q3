@@ -2,7 +2,6 @@
 
 docker system prune -f
 
-# /home/camel/src/rinha-backend-2023q3/teste/gatling/deps/gatling/bin
 GATLING_BIN_DIR=$(pwd)/teste/gatling/deps/gatling/bin
 GATLING_WORKSPACE=$(pwd)/stress-test
 RESULTS_WORKSPACE=$(pwd)/resultados/primeira-fase
@@ -10,8 +9,8 @@ DIEGO=diegolikescode
 
 echo "iniciando e logando execução da API"
 mkdir "$RESULTS_WORKSPACE/$DIEGO"
-docker-compose up -d --build
-docker-compose logs > "$RESULTS_WORKSPACE/$DIEGO/docker-compose.logs"
+docker compose up -d --build
+docker compose logs > "$RESULTS_WORKSPACE/$DIEGO/docker-compose.logs"
 echo "pausa de 6 segundos para startup pra API"
 sleep 6
 echo "iniciando teste"
@@ -27,6 +26,6 @@ curl -v "http://localhost:9999/contagem-pessoas" > "$SAVE_CONTAGEM"
 echo "resultado da contagem em $SAVE_CONTAGEM"
 cat "$SAVE_CONTAGEM"
 echo "cleaning up do docker"
-docker-compose rm -f
-docker-compose down
+docker compose rm -f
+docker compose down
 touch "$RESULTS_WORKSPACE/$DIEGO/testado"
