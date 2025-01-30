@@ -23,6 +23,7 @@ services:
 
   api1:
     image: rinha2023q3:latest
+    # build: .
     restart: always
     network_mode: host
     container_name: rinha2023q3_1
@@ -39,6 +40,7 @@ services:
 
   api2:
     image: rinha2023q3:latest
+    # build: .
     restart: always
     network_mode: host
     container_name: rinha2023q3_2
@@ -61,8 +63,6 @@ services:
     depends_on:
       - api1
       - api2
-    ports:
-      - "9999:9999"
     expose:
       - "9999"
     # deploy:
