@@ -4,15 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"rinha-backend-2023q3/src/entities"
 	"strconv"
 	"strings"
+
+	"rinha-backend-2023q3/src/entities"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func BuscaPessoa (c *gin.Context, db *gorm.DB) {
+func BuscaPessoa(c *gin.Context, db *gorm.DB) {
 	userID := c.Param("id")
 	fmt.Println(userID)
 	var user entities.Pessoa
@@ -26,10 +27,9 @@ func BuscaPessoa (c *gin.Context, db *gorm.DB) {
 	}
 
 	c.IndentedJSON(http.StatusOK, user)
-	return 
 }
 
-func BuscaPessoaPorTermo (c *gin.Context, db *gorm.DB) {
+func BuscaPessoaPorTermo(c *gin.Context, db *gorm.DB) {
 	searchTerm := c.Query("t")
 	fmt.Println(searchTerm)
 
@@ -51,23 +51,20 @@ func BuscaPessoaPorTermo (c *gin.Context, db *gorm.DB) {
 	var usersReturn []entities.ReturnPessoa
 	for _, user := range users {
 		usersReturn = append(usersReturn, entities.ReturnPessoa{
-			Id: user.Id,
-			Apelido: user.Apelido,
-			Nome: user.Nome,
+			Id:         user.Id,
+			Apelido:    user.Apelido,
+			Nome:       user.Nome,
 			Nascimento: user.Nascimento,
-			Stack: strings.Split(user.Stack, ";"),
+			Stack:      strings.Split(user.Stack, ";"),
 		})
 	}
 
-	c.IndentedJSON(http.StatusOK,  usersReturn)
-	return
+	c.IndentedJSON(http.StatusOK, usersReturn)
 }
 
-func ContaPessoas (c *gin.Context, db *gorm.DB) {
+func ContaPessoas(c *gin.Context, db *gorm.DB) {
 	var count int64
 	db.Model(&entities.Pessoa{}).Count(&count)
 	c.Header("Content-Type", "text/plain")
 	c.String(http.StatusOK, strconv.FormatInt(count, 10))
-	return 
 }
-

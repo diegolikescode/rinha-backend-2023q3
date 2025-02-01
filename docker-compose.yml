@@ -22,11 +22,13 @@ services:
           memory: '1.5GB'
 
   api1:
-    image: rinha2023q3:latest
-    # build: .
+    # image: rinha2023q3:latest
+    build: .
     restart: always
     network_mode: host
     container_name: rinha2023q3_1
+    environment:
+      PORT: "6969"
     depends_on:
       db:
         condition: service_healthy
@@ -39,16 +41,18 @@ services:
           memory: '0.5GB'
 
   api2:
-    image: rinha2023q3:latest
-    # build: .
+    # image: rinha2023q3:latest
+    build: .
     restart: always
     network_mode: host
     container_name: rinha2023q3_2
+    environment:
+      PORT: "4200"
     depends_on:
       db:
         condition: service_healthy
     expose:
-      - "4200"
+      - "6969"
     deploy:
       resources:
         limits:
