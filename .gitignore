@@ -9,4 +9,4 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-resultados/primeira-fase/diegolikescode/**
+docker-compose.logs

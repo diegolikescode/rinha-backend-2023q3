@@ -15,11 +15,11 @@ services:
       - "5432"
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d
-    # deploy:
-      # resources:
-        # limits:
-          # cpus: '0.7'
-          # memory: '1GB'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.95'
+          memory: '1.5GB'
 
   api1:
     image: rinha2023q3:latest
@@ -32,11 +32,11 @@ services:
         condition: service_healthy
     expose:
       - "6969"
-    # deploy:
-      # resources:
-        # limits:
-          # cpus: '0.25'
-          # memory: '0.5GB'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: '0.5GB'
 
   api2:
     image: rinha2023q3:latest
@@ -49,11 +49,11 @@ services:
         condition: service_healthy
     expose:
       - "4200"
-    # deploy:
-      # resources:
-        # limits:
-          # cpus: '0.25'
-          # memory: '0.5GB'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: '0.5GB'
 
   nginx:
     image: nginx:latest
@@ -65,8 +65,8 @@ services:
       - api2
     expose:
       - "9999"
-    # deploy:
-      # resources:
-        # limits:
-          # cpus: '0.25'
-          # memory: '0.5GB'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+          memory: '0.5GB'
