@@ -48,41 +48,41 @@ export default simulation((setUp) => {
         http('busca inválida').get('/pessoas').check(status().is(400)),
     )
 
-    setUp(
-        cria_consulta.injectOpen(
-            constantUsersPerSec(2).during({ amount: 10, unit: 'seconds' }),
-            constantUsersPerSec(5).during(15).randomized(),
-
-            rampUsersPerSec(6).to(60).during({ amount: 3, unit: 'minutes' }),
-        ),
-        busca.injectOpen(
-            constantUsersPerSec(2).during({ amount: 25, unit: 'seconds' }),
-
-            rampUsersPerSec(6).to(60).during({ amount: 3, unit: 'minutes' }),
-        ),
-        busca_invalida.injectOpen(
-            constantUsersPerSec(2).during({ amount: 25, unit: 'seconds' }),
-
-            rampUsersPerSec(6).to(6).during({ amount: 3, unit: 'minutes' }),
-        ),
-    ).protocols(http_protocol)
-
     // setUp(
     //     cria_consulta.injectOpen(
     //         constantUsersPerSec(2).during({ amount: 10, unit: 'seconds' }),
     //         constantUsersPerSec(5).during(15).randomized(),
     //
-    //         rampUsersPerSec(6).to(600).during({ amount: 3, unit: 'minutes' }),
+    //         rampUsersPerSec(6).to(60).during({ amount: 3, unit: 'minutes' }),
     //     ),
     //     busca.injectOpen(
     //         constantUsersPerSec(2).during({ amount: 25, unit: 'seconds' }),
     //
-    //         rampUsersPerSec(6).to(100).during({ amount: 3, unit: 'minutes' }),
+    //         rampUsersPerSec(6).to(60).during({ amount: 3, unit: 'minutes' }),
     //     ),
     //     busca_invalida.injectOpen(
     //         constantUsersPerSec(2).during({ amount: 25, unit: 'seconds' }),
     //
-    //         rampUsersPerSec(6).to(40).during({ amount: 3, unit: 'minutes' }),
+    //         rampUsersPerSec(6).to(6).during({ amount: 3, unit: 'minutes' }),
     //     ),
     // ).protocols(http_protocol)
+
+    setUp(
+        cria_consulta.injectOpen(
+            constantUsersPerSec(2).during({ amount: 10, unit: 'seconds' }),
+            constantUsersPerSec(5).during(15).randomized(),
+
+            rampUsersPerSec(6).to(600).during({ amount: 3, unit: 'minutes' }),
+        ),
+        busca.injectOpen(
+            constantUsersPerSec(2).during({ amount: 25, unit: 'seconds' }),
+
+            rampUsersPerSec(6).to(100).during({ amount: 3, unit: 'minutes' }),
+        ),
+        busca_invalida.injectOpen(
+            constantUsersPerSec(2).during({ amount: 25, unit: 'seconds' }),
+
+            rampUsersPerSec(6).to(40).during({ amount: 3, unit: 'minutes' }),
+        ),
+    ).protocols(http_protocol)
 })
