@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -29,7 +28,7 @@ func validateValues(nome string, apelido string, nascimento string) bool {
 
 func CreatePessoa(c fiber.Ctx, db *gorm.DB) error {
 	var jsonEntrada entities.CreatePessoaDTO
-	if err := c.Bind().Body(&jsonEntrada); err != nil {
+	if err := c.Bind().JSON(&jsonEntrada); err != nil {
 		c.Status(http.StatusBadRequest)
 		return nil
 	}
@@ -57,7 +56,6 @@ func CreatePessoa(c fiber.Ctx, db *gorm.DB) error {
 	}
 
 	db.Create(&pessoaBody)
-	fmt.Println("THIS IS THE BODY", pessoaBody)
 	if db.Error != nil {
 		print(db.Error)
 	}
