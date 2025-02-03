@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
 	"rinha-backend-2023q3/src/entities"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
 )
 
@@ -26,24 +27,22 @@ func validateValues(nome string, apelido string, nascimento string) bool {
 	return true
 }
 
-func CreatePessoa(c *gin.Context, db *gorm.DB) {
+func CreatePessoa(c fiber.Ctx, db *gorm.DB) error {
 	var jsonEntrada entities.CreatePessoaDTO
-	if err := c.ShouldBindJSON(&jsonEntrada); err != nil {
-		c.Writer.WriteHeader(http.StatusBadRequest)
-		return
+	if err := c.Bind().Body(&jsonEntrada); err != nil {
+		c.Status(http.StatusBadRequest)
+		return nil
 	}
 
 	if !validateValues(jsonEntrada.Nome, jsonEntrada.Apelido, jsonEntrada.Nascimento) {
-		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-		return
+		c.Status(http.StatusUnprocessableEntity)
+		return nil
 	}
 
 	var user entities.Pessoa
 	if db.Where("apelido = ?", jsonEntrada.Apelido).First(&user).RowsAffected > 0 {
-		c.IndentedJSON(http.StatusUnprocessableEntity, entities.HttpResponse{
-			Message: "Esse apelido já está sendo utilizado",
-		})
-		return
+		c.Status(http.StatusUnprocessableEntity)
+		return nil
 	}
 
 	newUUID := entities.CreateUUID()
@@ -54,15 +53,16 @@ func CreatePessoa(c *gin.Context, db *gorm.DB) {
 		Nome:         jsonEntrada.Nome,
 		Nascimento:   jsonEntrada.Nascimento,
 		Stack:        stackStr,
-		SearchString: jsonEntrada.Apelido + jsonEntrada.Nome + stackStr,
+		SearchString: jsonEntrada.Apelido + ";" + jsonEntrada.Nome + stackStr,
 	}
 
 	db.Create(&pessoaBody)
-
+	fmt.Println("THIS IS THE BODY", pessoaBody)
 	if db.Error != nil {
 		print(db.Error)
 	}
 
-	c.Writer.WriteHeader(http.StatusCreated)
-	c.Writer.Header().Add("Location", "/pessoas/"+newUUID)
+	c.Status(http.StatusCreated)
+	c.Set("Location", "/pessoas/"+newUUID)
+	return nil
 }

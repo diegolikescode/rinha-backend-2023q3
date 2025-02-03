@@ -1,41 +1,47 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"rinha-backend-2023q3/src/entities"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
 )
 
-func BuscaPessoa(c *gin.Context, db *gorm.DB) {
-	userID := c.Param("id")
-	fmt.Println(userID)
+func BuscaPessoa(c fiber.Ctx, db *gorm.DB) error {
+	userID := c.Params("id")
 	var user entities.Pessoa
 	res := db.First(&user, "id = ?", userID)
-	fmt.Println(res)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			c.Writer.WriteHeader(http.StatusNotFound)
-			return
+			c.Status(http.StatusNotFound)
+			return nil
 		}
 	}
 
-	c.IndentedJSON(http.StatusOK, user)
+	userBytes, err := json.Marshal(user)
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		c.SendString("Something weird happened while trying to Marshal the user on BuscaPessoa")
+		return nil
+
+	}
+
+	c.Status(http.StatusOK).Send([]byte(userBytes))
+	return nil
 }
 
-func BuscaPessoaPorTermo(c *gin.Context, db *gorm.DB) {
+func BuscaPessoaPorTermo(c fiber.Ctx, db *gorm.DB) error {
 	searchTerm := c.Query("t")
-	fmt.Println(searchTerm)
 
 	if searchTerm == "" {
-		c.Writer.WriteHeader(http.StatusBadRequest)
-		return
+		c.Status(http.StatusBadRequest)
+		return nil
 	}
 
 	userTerm := "%" + searchTerm + "%"
@@ -44,8 +50,9 @@ func BuscaPessoaPorTermo(c *gin.Context, db *gorm.DB) {
 	db.Where("search_string LIKE ? LIMIT 50", userTerm).Find(&users)
 
 	if len(users) == 0 {
-		c.JSON(http.StatusOK, []interface{}{})
-		return
+		c.Status(http.StatusOK)
+		c.Send([]byte("{}"))
+		return nil
 	}
 
 	var usersReturn []entities.ReturnPessoa
@@ -59,12 +66,24 @@ func BuscaPessoaPorTermo(c *gin.Context, db *gorm.DB) {
 		})
 	}
 
-	c.IndentedJSON(http.StatusOK, usersReturn)
+	userBytes, err := json.Marshal(usersReturn)
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		c.SendString("Something weird happened while trying to Marshal the user on BuscaPessoa")
+		return nil
+
+	}
+
+	c.Status(http.StatusOK)
+	c.Send(userBytes)
+	return nil
 }
 
-func ContaPessoas(c *gin.Context, db *gorm.DB) {
+func ContaPessoas(c fiber.Ctx, db *gorm.DB) error {
 	var count int64
 	db.Model(&entities.Pessoa{}).Count(&count)
-	c.Header("Content-Type", "text/plain")
-	c.String(http.StatusOK, strconv.FormatInt(count, 10))
+	c.Set("content-type", "text/plain")
+	c.Status(http.StatusOK).SendString(strconv.FormatInt(count, 10))
+
+	return nil
 }

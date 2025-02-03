@@ -1,38 +1,45 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"rinha-backend-2023q3/src/config"
 	"rinha-backend-2023q3/src/handlers"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v3"
 )
 
 func main() {
 	Database := config.PostgresConnection()
 
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		htmlContent := "<html><head><title>just testin</title></head><body><h1>JUSTIN CASE</h1></body></html>"
-		c.Data(200, "text/html; charset=utf-8", []byte(htmlContent))
+	app := fiber.New()
+	app.Get("/", func(c fiber.Ctx) error {
+		content := []byte("<html><head><title>XAMA</title></head><body><h1>JUSTIN CASE</h1></body></html>")
+		c.Set("content-type", "text/html; charset=utf-8")
+
+		c.Status(200).Set("success", "true")
+		return c.Send(content)
 	})
 
-	r.POST("/pessoas", func(c *gin.Context) {
-		handlers.CreatePessoa(c, Database)
+	app.Post("/pessoas", func(c fiber.Ctx) error {
+		return handlers.CreatePessoa(c, Database)
 	})
 
-	r.GET("/pessoas/:id", func(c *gin.Context) {
-		handlers.BuscaPessoa(c, Database)
+	app.Get("/pessoas/:id", func(c fiber.Ctx) error {
+		return handlers.BuscaPessoa(c, Database)
 	})
 
-	r.GET("/pessoas", func(c *gin.Context) {
-		handlers.BuscaPessoaPorTermo(c, Database)
+	app.Get("/pessoas", func(c fiber.Ctx) error {
+		return handlers.BuscaPessoaPorTermo(c, Database)
 	})
 
-	r.GET("/contagem-pessoas", func(c *gin.Context) {
-		handlers.ContaPessoas(c, Database)
+	app.Get("/contagem-pessoas", func(c fiber.Ctx) error {
+		return handlers.ContaPessoas(c, Database)
 	})
 
-	r.Run(":" + os.Getenv("PORT"))
+	if os.Getenv("PORT") == "" {
+		os.Setenv("PORT", "4200")
+	}
+	log.Fatal(app.Listen(":" + os.Getenv("PORT")))
 }
