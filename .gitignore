@@ -10,3 +10,6 @@
 *.out
 
 docker-compose.logs
+
+# build generated
+main
