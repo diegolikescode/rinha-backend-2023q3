@@ -13,12 +13,16 @@ services:
       - "5432:5432"
     expose:
       - "5432"
+    tmpfs:
+      - /var/lib/postgresql/data
     volumes:
-      - ./migrations:/docker-entrypoint-initdb.d
+      # - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/create_pessoas_table.sql:/docker-entrypoint-initdb.d/init_db.sql
+    # command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     deploy:
       resources:
         limits:
-          cpus: '0.95'
+          cpus: '0.75'
           memory: '1.5GB'
 
   api1:
@@ -37,7 +41,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.2'
+          cpus: '0.3'
           memory: '0.5GB'
 
   api2:
@@ -51,12 +55,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    expose:
-      - "6969"
     deploy:
       resources:
         limits:
-          cpus: '0.2'
+          cpus: '0.3'
           memory: '0.5GB'
 
   nginx:
