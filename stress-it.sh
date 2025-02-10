@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 
+docker compose down --remove-orphans
 docker system prune -f
 
 RESULTS_DIR="$(pwd)/load-test/resultados"
@@ -24,5 +25,5 @@ curl -v "http://localhost:9999/contagem-pessoas" > "$SAVE_CONTAGEM"
 echo "resultado da contagem em $SAVE_CONTAGEM"
 echo "INSERTS: $(cat "$SAVE_CONTAGEM")"
 echo "cleaning up do docker"
-docker compose rm -f
-docker compose down
+# docker compose rm -f
+docker compose down --remove-orphans api1 api2 nginx

@@ -16,9 +16,9 @@ services:
     tmpfs:
       - /var/lib/postgresql/data
     volumes:
-      # - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./postgres/create_pessoas_table.sql:/docker-entrypoint-initdb.d/init_db.sql
-    # command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     deploy:
       resources:
         limits:
