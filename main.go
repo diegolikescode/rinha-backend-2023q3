@@ -18,7 +18,6 @@ func main() {
 		content := []byte("<html><head><title>XAMA</title></head><body><h1>JUSTIN CASE</h1></body></html>")
 		c.Set("content-type", "text/html; charset=utf-8")
 
-		c.Status(200).Set("success", "true")
 		return c.Send(content)
 	})
 
