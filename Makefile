@@ -1,10 +1,10 @@
-a:
-	./stress-it.sh
-
 go:
 	docker compose down --volumes --remove-orphans
 	docker compose -f docker-compose.yml up db --build -d
 	go run main.go
+
+t:
+	./stress-it.sh
 
 build:
 	go build -o main
