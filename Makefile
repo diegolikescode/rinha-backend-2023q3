@@ -3,7 +3,7 @@ a:
 
 go:
 	docker compose down --volumes --remove-orphans
-	docker compose -f docker-compose.local.yml up --build -d
+	docker compose -f docker-compose.yml up db --build -d
 	go run main.go
 
 build:
