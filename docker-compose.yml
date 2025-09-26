@@ -13,12 +13,16 @@ services:
       - "5432:5432"
     expose:
       - "5432"
+    tmpfs:
+      - /var/lib/postgresql/data
     volumes:
-      - ./migrations:/docker-entrypoint-initdb.d
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/create_pessoas_table.sql:/docker-entrypoint-initdb.d/init_db.sql
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     deploy:
       resources:
         limits:
-          cpus: '0.95'
+          cpus: '0.75'
           memory: '1.5GB'
 
   api1:
@@ -29,6 +33,7 @@ services:
     container_name: rinha2023q3_1
     environment:
       PORT: "6969"
+      API_NAME: "api1"
     depends_on:
       db:
         condition: service_healthy
@@ -37,7 +42,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.2'
+          cpus: '0.3'
           memory: '0.5GB'
 
   api2:
@@ -48,22 +53,26 @@ services:
     container_name: rinha2023q3_2
     environment:
       PORT: "4200"
+      API_NAME: "api2"
     depends_on:
       db:
         condition: service_healthy
-    expose:
-      - "6969"
     deploy:
       resources:
         limits:
-          cpus: '0.2'
+          cpus: '0.3'
           memory: '0.5GB'
 
   nginx:
     image: nginx:latest
     network_mode: host
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/logs:/var/log/nginx
+    ulimits:
+      nofile:
+        soft: 200000
+        hard: 200000
     depends_on:
       - api1
       - api2
@@ -74,3 +83,31 @@ services:
         limits:
           cpus: '0.15'
           memory: '0.5GB'
+
+  # grafana:
+  #   image: grafana/grafana
+  #   network_mode: host
+  #   container_name: grafana
+  #   restart: unless-stopped
+  #   environment:
+  #     GF_SECURITY_ADMIN_PASSWORD: admin
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - ./observability/grafana/grafana-readonly:/var/lib/grafana
+  #     - ./observability/grafana/provisioning:/etc/grafana/provisioning
+  #   depends_on:
+  #     - prometheus
+  #
+  # prometheus:
+  #   image: prom/prometheus
+  #   network_mode: host
+  #   container_name: prometheus
+  #   restart: unless-stopped
+  #   command: ['--config.file=/etc/prometheus/prometheus.yml']
+  #   # ports: ['9090:9090']
+  #   volumes:
+  #     - ./observability/prometheus:/etc/prometheus
+  #   depends_on:
+  #     - api1
+  #     - api2

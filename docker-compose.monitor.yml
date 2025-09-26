@@ -1,0 +1,27 @@
+services:
+  grafana:
+    image: grafana/grafana
+    network_mode: host
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    # ports: ['3000:3000']
+    volumes:
+      - ./observability/grafana/grafana-readonly:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus
+    network_mode: host
+    container_name: prometheus
+    restart: unless-stopped
+    command: ['--config.file=/etc/prometheus/prometheus.yml']
+    # ports: ['9090:9090']
+    volumes:
+      - ./observability/prometheus:/etc/prometheus
+    # depends_on:
+    #   - api1
+    #   - api2

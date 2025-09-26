@@ -6,10 +6,15 @@
 
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
 docker-compose.logs
 
-# build generated
 main
+./load-test/target/gatling/*
+
+./observability/grafana/grafana-readonly/*
+!./observability/grafana/grafana-readonly/.gitkeep
+
+./nginx/logs/*
+!./nginx/logs/.gitkeep

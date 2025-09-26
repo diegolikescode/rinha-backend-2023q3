@@ -1,13 +1,16 @@
 package handlers
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
+	"rinha-backend-2023q3/src/config"
 	"rinha-backend-2023q3/src/entities"
 
 	"github.com/gofiber/fiber/v3"
-	"gorm.io/gorm"
 )
 
 func validateValues(nome string, apelido string, nascimento string) bool {
@@ -26,7 +29,7 @@ func validateValues(nome string, apelido string, nascimento string) bool {
 	return true
 }
 
-func CreatePessoa(c fiber.Ctx, db *gorm.DB) error {
+func CreatePessoa(c fiber.Ctx) error {
 	var jsonEntrada entities.CreatePessoaDTO
 	if err := c.Bind().JSON(&jsonEntrada); err != nil {
 		c.Status(http.StatusBadRequest)
@@ -38,29 +41,27 @@ func CreatePessoa(c fiber.Ctx, db *gorm.DB) error {
 		return nil
 	}
 
-	var user entities.Pessoa
-	if db.Where("apelido = ?", jsonEntrada.Apelido).First(&user).RowsAffected > 0 {
+	uid := entities.CreateUUID()
+	stackStr := strings.Join(jsonEntrada.Stack, ";")
+	searchStr := jsonEntrada.Apelido + ";" + jsonEntrada.Nome + ";" + stackStr
+
+	res, err := config.Pool.Exec(context.Background(), `
+		INSERT INTO pessoas (id, apelido, nome, nascimento, stack, search_string, api_name)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		ON CONFLICT (apelido) DO NOTHING
+	`, uid, jsonEntrada.Apelido, jsonEntrada.Nome, jsonEntrada.Nascimento, stackStr, searchStr, os.Getenv("API_NAME"))
+	if err != nil {
+		fmt.Println("MY ERROR:::", err)
+		c.Status(http.StatusInternalServerError)
+		return nil
+	}
+
+	if res.RowsAffected() == 0 {
 		c.Status(http.StatusUnprocessableEntity)
 		return nil
 	}
 
-	newUUID := entities.CreateUUID()
-	stackStr := strings.Join(jsonEntrada.Stack, ";")
-	pessoaBody := entities.Pessoa{
-		Id:           newUUID,
-		Apelido:      jsonEntrada.Apelido,
-		Nome:         jsonEntrada.Nome,
-		Nascimento:   jsonEntrada.Nascimento,
-		Stack:        stackStr,
-		SearchString: jsonEntrada.Apelido + ";" + jsonEntrada.Nome + stackStr,
-	}
-
-	db.Create(&pessoaBody)
-	if db.Error != nil {
-		print(db.Error)
-	}
-
 	c.Status(http.StatusCreated)
-	c.Set("Location", "/pessoas/"+newUUID)
+	c.Set("Location", "/pessoas/"+uid)
 	return nil
 }

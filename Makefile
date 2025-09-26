@@ -1,10 +1,18 @@
-a:
-	./stress-it.sh
-
 go:
 	docker compose down --volumes --remove-orphans
 	docker compose -f docker-compose.yml up db --build -d
 	go run main.go
+
+t:
+	# F in the chat
+	docker compose down --remove-orphans
+	docker system prune -f
+	docker compose -f docker-compose.monitor.yml down --remove-orphans
+
+	docker compose -f docker-compose.monitor.yml up -d
+
+	echo "monitor has started composing, starting stress test"
+	./stress-it.sh
 
 build:
 	go build -o main

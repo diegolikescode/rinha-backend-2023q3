@@ -1,0 +1,19 @@
+# keep the image context minimal
+observability/
+nginx/
+postgres/
+*.log
+*.csv
+*.db
+*.sqlite
+.git
+.gitignore
+.DS_Store
+.vscode/
+.idea/
+
+# Go typical
+bin/
+dist/
+build/
+*.test

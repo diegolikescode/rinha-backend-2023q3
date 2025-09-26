@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS pessoas (
     nome TEXT,
     nascimento TEXT,
     stack TEXT,
-    search_string TEXT
+    search_string TEXT,
+    api_name TEXT
 );
 
 ALTER TABLE pessoas SET UNLOGGED;
