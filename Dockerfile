@@ -1,11 +1,14 @@
-FROM golang:1.23-alpine
+FROM golang:1.25-alpine
 
 WORKDIR /app
 
-COPY . .
+COPY go.* ./
 
 RUN go mod download
 
-RUN go build -o main .
+COPY ./cmd ./cmd
+COPY ./src ./src
 
-CMD ["./main"]
+RUN go build -o rinha ./cmd/rinha.go
+
+CMD ["./rinha"]

@@ -1,7 +1,10 @@
+r:
+	go run ./cmd/rinha.go
+
 go:
 	docker compose down --volumes --remove-orphans
 	docker compose -f docker-compose.yml up db --build -d
-	go run main.go
+	go run ./cmd/rinha.go
 
 t:
 	# F in the chat
